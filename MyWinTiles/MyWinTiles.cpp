@@ -74,6 +74,7 @@ UINT previousWorkSpace = 1;
 UINT iterator = 0;
 
 UINT workspaceTileMode[MAX_WORKSPACE];
+BOOL isFocusByHotkey = FALSE;
 
 //Replace this with 2 dimension array
 HWND windowOfWorkSpace1[MAX_WINDOW_PER_WORKSPACE];
@@ -170,6 +171,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				UpdateCurrentWorkspaceLayout();
 				break;
 			}
+
 			case HSHELL_WINDOWDESTROYED:
 			{
 				//Performance hog in 3, 2 , 1
@@ -182,6 +184,31 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				break;
 			}
+
+			case HSHELL_RUDEAPPACTIVATED:
+			{
+				if (isFocusByHotkey) {
+					isFocusByHotkey = FALSE;
+					break;
+				}
+
+				HWND hWnd = (HWND) msg.lParam;
+
+				int indice = currentFocusIndice[currentWorkSpace - 1];
+				HWND* currentAry = GetWorkspaceByID(currentWorkSpace);
+
+				if (hWnd != currentAry[indice]) {
+					for (UINT i = 0; i < MAX_WORKSPACE; ++i) {
+						if (currentAry[i] == hWnd) {
+							currentFocusIndice[currentWorkSpace - 1] = i;
+							break;
+						}
+					}
+				}
+
+				break;
+			}
+
 			default:
 				break;
 			}
@@ -704,7 +731,6 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 BOOL CALLBACK InitWorkSpaces_Callback(HWND hWnd, LPARAM lParam)
 {
-	//If no buffer left -> stop iterate..
 	if (iterator >= MAX_WINDOW_PER_WORKSPACE)
 		return FALSE;
 
@@ -714,9 +740,9 @@ BOOL CALLBACK InitWorkSpaces_Callback(HWND hWnd, LPARAM lParam)
 	if (!IsWindow(hWnd))
 		return TRUE;
 
-	//if window is valid -> add to workspace 1
-	windowOfWorkSpace1[iterator] = hWnd;
-	iterator++;
+	if (AddWindowToWorkspace(hWnd, 1)) {
+		iterator++;
+	}
 
 	return TRUE;
 }
@@ -980,7 +1006,7 @@ void UpdateWorkspaceLayout(UINT workspace)
 		TileWindowHorizontal();
 
 	else if (workspaceTileMode[workspace - 1] == OVERLAP_WINDOW_MODE)
-		EnumWindows(MaximizeAllWindows, workspace);
+		EnumWindows(&MaximizeAllWindows, workspace);
 }
 
 void TileWindowVertical()
@@ -1054,6 +1080,8 @@ void FocusWindow(UINT workspace, UINT id)
 
 	if (id > MAX_WINDOW_PER_WORKSPACE - 1)
 		return;
+
+	isFocusByHotkey = TRUE;
 
 	HWND focusWindow = GetWindowByWorkspaceID(workspace, id);
 	SetForegroundWindow(focusWindow);
