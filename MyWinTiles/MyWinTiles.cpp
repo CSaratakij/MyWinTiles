@@ -114,6 +114,7 @@ void FocusPreviousWindow();
 void RefreshWorkspace(UINT);
 void UpdateTotalWindowInWorkspace(UINT);
 void SwapCurrentFocusWindow(UINT, UINT);
+void SetDefaultStyle(HWND);
 
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
@@ -164,8 +165,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (isCanAddWindow) {
 					int totalWindow = totalWindowInWorkspace[currentWorkSpace - 1];
 					totalWindow += 1;
+
 					totalWindowInWorkspace[currentWorkSpace - 1] = totalWindow;
 					currentFocusIndice[currentWorkSpace - 1] = (totalWindow - 1);
+
+					SetDefaultStyle(hWnd);
 				}
 
 				UpdateCurrentWorkspaceLayout();
@@ -741,6 +745,7 @@ BOOL CALLBACK InitWorkSpaces_Callback(HWND hWnd, LPARAM lParam)
 		return TRUE;
 
 	if (AddWindowToWorkspace(hWnd, 1)) {
+		SetDefaultStyle(hWnd);
 		iterator++;
 	}
 
@@ -1184,4 +1189,12 @@ void SwapCurrentFocusWindow(UINT workspace, UINT swapType)
 	default:
 		break;
 	}
+}
+
+void SetDefaultStyle(HWND hWnd)
+{
+	LONG defaultStyle = GetWindowLong(hWnd, GWL_STYLE);
+	LONG disableStyle = WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU;
+	LONG result = defaultStyle & ~disableStyle;
+	SetWindowLong(hWnd, GWL_STYLE, result);
 }
