@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "MyWinTiles.h"
 
+#define APPBAR_WINDOW_CLASS "TESTBAR"
+
 #define MAX_LOADSTRING 100
 #define MOD MOD_ALT
 
@@ -56,6 +58,11 @@
 
 #define SWAPWINDOW_NEXT 0x01
 #define SWAPWINDOW_PREVIOUS 0x02
+
+#define HOTKEY_CLOSE_TESTBAR 8000
+#define HOTKEY_TOGGLE_EXPLORER_TASKBAR 8001
+
+HWND bar = NULL;
 
 struct WORKSPACE
 {
@@ -114,7 +121,7 @@ void FocusPreviousWindow();
 void RefreshWorkspace(UINT);
 void UpdateTotalWindowInWorkspace(UINT);
 void SwapCurrentFocusWindow(UINT, UINT);
-void SetDefaultStyle(HWND);
+void SendCurrentWorkspaceThroughIPC(HWND hWnd);
 
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
@@ -156,6 +163,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			case HSHELL_WINDOWCREATED:
 			{
 				HWND hWnd = (HWND)msg.lParam;
+				bar = FindWindow(_T(APPBAR_WINDOW_CLASS), NULL);
+
+				if (bar == hWnd)
+					break;
 
 				if (!IsWindow(hWnd) && IsValidWindow(hWnd))
 					hWnd = GetLastActivePopup(hWnd);
@@ -168,8 +179,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 					totalWindowInWorkspace[currentWorkSpace - 1] = totalWindow;
 					currentFocusIndice[currentWorkSpace - 1] = (totalWindow - 1);
-
-					SetDefaultStyle(hWnd);
 				}
 
 				UpdateCurrentWorkspaceLayout();
@@ -291,6 +300,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				SwitchToWorkspace(1);
 				FocusWindow(1, currentFocusIndice[0]);
+				SendCurrentWorkspaceThroughIPC(msg.hwnd);
 				break;
 			}
 
@@ -298,42 +308,49 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				SwitchToWorkspace(2);
 				FocusWindow(2, currentFocusIndice[1]);
+				SendCurrentWorkspaceThroughIPC(msg.hwnd);
 				break;
 			}
 			case HOTKEY_SWITHTO_WORKSPACE_3:
 			{
 				SwitchToWorkspace(3);
 				FocusWindow(3, currentFocusIndice[2]);
+				SendCurrentWorkspaceThroughIPC(msg.hwnd);
 				break;
 			}
 			case HOTKEY_SWITHTO_WORKSPACE_4:
 			{
 				SwitchToWorkspace(4);
 				FocusWindow(4, currentFocusIndice[3]);
+				SendCurrentWorkspaceThroughIPC(msg.hwnd);
 				break;
 			}
 			case HOTKEY_SWITHTO_WORKSPACE_5:
 			{
 				SwitchToWorkspace(5);
 				FocusWindow(5, currentFocusIndice[4]);
+				SendCurrentWorkspaceThroughIPC(msg.hwnd);
 				break;
 			}
 			case HOTKEY_SWITHTO_WORKSPACE_6:
 			{
 				SwitchToWorkspace(6);
 				FocusWindow(6, currentFocusIndice[5]);
+				SendCurrentWorkspaceThroughIPC(msg.hwnd);
 				break;
 			}
 			case HOTKEY_SWITHTO_WORKSPACE_7:
 			{
 				SwitchToWorkspace(7);
 				FocusWindow(7, currentFocusIndice[6]);
+				SendCurrentWorkspaceThroughIPC(msg.hwnd);
 				break;
 			}
 			case HOTKEY_SWITHTO_WORKSPACE_8:
 			{
 				SwitchToWorkspace(8);
 				FocusWindow(8, currentFocusIndice[7]);
+				SendCurrentWorkspaceThroughIPC(msg.hwnd);
 				break;
 			}
 
@@ -341,6 +358,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				SwitchToWorkspace(9);
 				FocusWindow(9, currentFocusIndice[8]);
+				SendCurrentWorkspaceThroughIPC(msg.hwnd);
 				break;
 			}
 
@@ -348,6 +366,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				SwitchToWorkspace(10);
 				FocusWindow(10, currentFocusIndice[9]);
+				SendCurrentWorkspaceThroughIPC(msg.hwnd);
 				break;
 			}
 
@@ -367,6 +386,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				SwitchToNextWorkspace();
 				FocusWindow(currentWorkSpace, currentFocusIndice[currentWorkSpace - 1]);
+				SendCurrentWorkspaceThroughIPC(msg.hwnd);
 				break;
 			}
 
@@ -374,6 +394,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				SwitchToPreviousWorkspace();
 				FocusWindow(currentWorkSpace, currentFocusIndice[currentWorkSpace - 1]);
+				SendCurrentWorkspaceThroughIPC(msg.hwnd);
 				break;
 			}
 
@@ -500,6 +521,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				break;
 			}
 
+			case HOTKEY_CLOSE_TESTBAR:
+			{
+				HWND testbar = FindWindow(_T(APPBAR_WINDOW_CLASS), NULL);
+				SendMessage(testbar, WM_CLOSE, NULL, NULL);
+				break;
+			}
+
+			case HOTKEY_TOGGLE_EXPLORER_TASKBAR:
+			{
+				HWND taskbar = FindWindow(_T("Shell_TrayWnd"), NULL);
+
+				if (taskbar == NULL)
+					break;
+
+				if (IsWindowVisible(taskbar))
+					ShowWindow(taskbar, SW_HIDE);
+				else
+					ShowWindow(taskbar, SW_SHOW);
+
+				break;
+			}
+
 			default:
 				break;
 			}
@@ -597,6 +640,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_NEXT, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x4c); //Mod + shift + l
    RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_PREVIOUS, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x48); //Mod + shift + h
    
+   RegisterHotKey(hWnd, HOTKEY_CLOSE_TESTBAR, MOD | MOD_NOREPEAT, VK_F11);
+   RegisterHotKey(hWnd, HOTKEY_TOGGLE_EXPLORER_TASKBAR, MOD | MOD_NOREPEAT, VK_F12);
+
    for (UINT i = 0; i < MAX_WINDOW_PER_WORKSPACE; ++i) {
 	   windowOfWorkSpace1[i] = NULL;
 	   windowOfWorkSpace2[i] = NULL;
@@ -703,6 +749,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		UnregisterHotKey(hWnd, HOTKEY_SWITHTO_NEXT_WINDOW);
 		UnregisterHotKey(hWnd, HOTKEY_SWAPWINDOW_PREVIOUS);
 
+		UnregisterHotKey(hWnd, HOTKEY_CLOSE_TESTBAR);
+		UnregisterHotKey(hWnd, HOTKEY_TOGGLE_EXPLORER_TASKBAR);
+
         PostQuitMessage(0);
         break;
 	}
@@ -744,10 +793,8 @@ BOOL CALLBACK InitWorkSpaces_Callback(HWND hWnd, LPARAM lParam)
 	if (!IsWindow(hWnd))
 		return TRUE;
 
-	if (AddWindowToWorkspace(hWnd, 1)) {
-		SetDefaultStyle(hWnd);
+	if (AddWindowToWorkspace(hWnd, 1))
 		iterator++;
-	}
 
 	return TRUE;
 }
@@ -1191,10 +1238,19 @@ void SwapCurrentFocusWindow(UINT workspace, UINT swapType)
 	}
 }
 
-void SetDefaultStyle(HWND hWnd)
+void SendCurrentWorkspaceThroughIPC(HWND hWnd)
 {
-	LONG defaultStyle = GetWindowLong(hWnd, GWL_STYLE);
-	LONG disableStyle = WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU;
-	LONG result = defaultStyle & ~disableStyle;
-	SetWindowLong(hWnd, GWL_STYLE, result);
+	ULONG updateCurrentWorkspace = 1;
+	HWND testbar = FindWindow(_T(APPBAR_WINDOW_CLASS), NULL);
+
+	if (testbar == NULL)
+		return;
+
+	COPYDATASTRUCT data;
+
+	data.dwData = updateCurrentWorkspace;
+	data.cbData = sizeof(UINT);
+	data.lpData = &currentWorkSpace;
+
+	SendMessage(testbar, WM_COPYDATA, (WPARAM) hWnd, (LPARAM)(LPVOID) &data);
 }
