@@ -1,4 +1,5 @@
 # MyWinTiles
+![pic](screenshots/pic.png)
 - Tiling window manager for Windows 10
 - Built on top of explorer shell
 - Inspired by i3 window manager
@@ -19,6 +20,9 @@ NoWinKeys REG_DWORD 0x00000001 (1)
 
 # Keyboard shortcut
 - Take a look at [Default keyboard shortcut](Keybind.md)
+
+# Additional
+- You might want to use [MyWinBar](https://github.com/CSaratakij/MyWinBar), an AppBar for MyWinTiles.
 
 # Issue
 - Test with Windows 10 (Other windows version don't officially support.)
