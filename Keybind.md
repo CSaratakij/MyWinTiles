@@ -35,4 +35,5 @@
 [ Mod + Shift + 8 ] - Move window to workspace 8
 [ Mod + Shift + 9 ] - Move window to workspace 9
 [ Mod + Shift + 10 ] - Move window to workspace 10
+[ Mod + F12 ] - Toggle Explorer Shell's Taskbar
 ```
