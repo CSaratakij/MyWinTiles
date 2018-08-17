@@ -2,75 +2,9 @@
 #include "stdafx.h"
 #include "MyWinTiles.h"
 
-#define APPBAR_WINDOW_CLASS "TESTBAR"
-
 #define MAX_LOADSTRING 100
-#define MOD MOD_ALT
-
-#define MAX_WORKSPACE 10
-#define MAX_WINDOW_PER_WORKSPACE 20
-
-#define HOTKEY_DESTROY_WINDOW 1001
-
-#define HOTKEY_MINIMIZE_WINDOW 1002
-#define HOTKEY_MAXIMIZE_WINDOW 1003
-#define HOTKEY_MAXIMIZE_ALL_WINDOW 1004
-#define HOTKEY_MINIMIZE_ALL_WINDOW 1005
-
-#define HOTKEY_SWITHTO_NEXT_WINDOW 1006
-#define HOTKEY_SWITHTO_PREVIOUS_WINDOW 1007
-
-#define HOTKEY_TILE_VERTICAL 1008
-#define HOTKEY_TILE_HORIZONTAL 1009
-#define HOTKEY_REFRESH_TILE 1010
-
-#define HOTKEY_OPEN_TERMINAL 1011
-
-#define HOTKEY_SWAPWINDOW_NEXT 1012
-#define HOTKEY_SWAPWINDOW_PREVIOUS 1013
-
-#define HOTKEY_SWITHTO_WORKSPACE_1 2001
-#define HOTKEY_SWITHTO_WORKSPACE_2 2002
-#define HOTKEY_SWITHTO_WORKSPACE_3 2003
-#define HOTKEY_SWITHTO_WORKSPACE_4 2004
-#define HOTKEY_SWITHTO_WORKSPACE_5 2005
-#define HOTKEY_SWITHTO_WORKSPACE_6 2006
-#define HOTKEY_SWITHTO_WORKSPACE_7 2007
-#define HOTKEY_SWITHTO_WORKSPACE_8 2008
-#define HOTKEY_SWITHTO_WORKSPACE_9 2009
-#define HOTKEY_SWITHTO_WORKSPACE_10 2010
-
-#define HOTKEY_SWITHTO_NEXT_WORKSPACE 2011
-#define HOTKEY_SWITHTO_PREVIOUS_WORKSPACE 2012
-
-#define HOTKEY_MOVEWINDOW_TO_WORKSPACE_1 5001
-#define HOTKEY_MOVEWINDOW_TO_WORKSPACE_2 5002
-#define HOTKEY_MOVEWINDOW_TO_WORKSPACE_3 5003
-#define HOTKEY_MOVEWINDOW_TO_WORKSPACE_4 5004
-#define HOTKEY_MOVEWINDOW_TO_WORKSPACE_5 5005
-#define HOTKEY_MOVEWINDOW_TO_WORKSPACE_6 5006
-#define HOTKEY_MOVEWINDOW_TO_WORKSPACE_7 5007
-#define HOTKEY_MOVEWINDOW_TO_WORKSPACE_8 5008
-#define HOTKEY_MOVEWINDOW_TO_WORKSPACE_9 5009
-#define HOTKEY_MOVEWINDOW_TO_WORKSPACE_10 5010
-
-#define OVERLAP_WINDOW_MODE 0x02
-
-#define SWAPWINDOW_NEXT 0x01
-#define SWAPWINDOW_PREVIOUS 0x02
-
-#define HOTKEY_CLOSE_TESTBAR 8000
-#define HOTKEY_TOGGLE_EXPLORER_TASKBAR 8001
 
 HWND bar = NULL;
-
-struct WORKSPACE
-{
-	UINT id;
-	UINT focusWindowID;
-	UINT currentTotalWindow;
-	HWND* windows;
-};
 
 int currentFocusIndice[MAX_WORKSPACE];
 int totalWindowInWorkspace[MAX_WORKSPACE];
@@ -95,42 +29,13 @@ HWND windowOfWorkSpace8[MAX_WINDOW_PER_WORKSPACE];
 HWND windowOfWorkSpace9[MAX_WINDOW_PER_WORKSPACE];
 HWND windowOfWorkSpace10[MAX_WINDOW_PER_WORKSPACE];
 
-BOOL CALLBACK InitWorkSpaces_Callback(HWND, LPARAM);
-BOOL CALLBACK MaximizeAllWindows(HWND, LPARAM);
-BOOL CALLBACK MinimizeAllWindows(HWND, LPARAM);
-
-HWND GetWindowByWorkspaceID(UINT, UINT);
-HWND* GetWorkspaceByID(UINT);
-BOOL IsValidWindow(HWND);
-BOOL AddWindowToWorkspace(HWND, UINT);
-BOOL MoveWindowToWorkspaceByID(HWND, UINT, UINT);
-BOOL SwitchToWorkspace(UINT);
-BOOL RemoveWindowFromWorkspace(HWND, UINT);
-
-void SwitchToNextWorkspace();
-void SwitchToPreviousWorkspace();
-void TileWindowVertical();
-void TileWindowHorizontal();
-void HideWorkspaceByID(UINT);
-void ShowWorkspaceByID(UINT);
-void UpdateCurrentWorkspaceLayout();
-void UpdateWorkspaceLayout(UINT);
-void FocusWindow(UINT, UINT);
-void FocusNextWindow();
-void FocusPreviousWindow();
-void RefreshWorkspace(UINT);
-void UpdateTotalWindowInWorkspace(UINT);
-void SwapCurrentFocusWindow(UINT, UINT);
-void SendCurrentWorkspaceThroughIPC(HWND hWnd);
-
-HINSTANCE hInst;                                // current instance
-WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
-WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+HINSTANCE hInst;
+WCHAR szTitle[MAX_LOADSTRING];
+WCHAR szWindowClass[MAX_LOADSTRING];
 
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -151,7 +56,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MYWINTILES));
     MSG msg;
 
-    while (GetMessage(&msg, nullptr, 0, 0) != 0)
+    while (GetMessage(&msg, nullptr, 0, 0) > 0)
     {
         if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
             TranslateMessage(&msg);
@@ -165,7 +70,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				HWND hWnd = (HWND)msg.lParam;
 				bar = FindWindow(_T(APPBAR_WINDOW_CLASS), NULL);
 
-				if (bar == hWnd)
+				if (bar != NULL && bar == hWnd)
 					break;
 
 				if (!IsWindow(hWnd) && IsValidWindow(hWnd))
@@ -187,14 +92,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			case HSHELL_WINDOWDESTROYED:
 			{
-				//Performance hog in 3, 2 , 1
 				HWND hWnd = (HWND) msg.lParam;
 				BOOL isCanRemove = FALSE;
+
 				isCanRemove = RemoveWindowFromWorkspace(hWnd, currentWorkSpace);
+
 				if (isCanRemove) {
 					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
+
 				break;
 			}
 
@@ -566,7 +473,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MYWINTILES));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_MYWINTILES);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
@@ -586,29 +492,27 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    ShowWindow(hWnd, SW_HIDE);
    UpdateWindow(hWnd);
 
-   // Register Shell Hook here...
    RegisterShellHookWindow(hWnd);
    SHELLHOOK_MSG = RegisterWindowMessage(TEXT("SHELLHOOK"));
 
-   // Register Hotkey
    RegisterHotKey(hWnd, HOTKEY_DESTROY_WINDOW, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x51);
    RegisterHotKey(hWnd, HOTKEY_MINIMIZE_WINDOW, MOD | MOD_NOREPEAT, 0x4d);
    RegisterHotKey(hWnd, HOTKEY_MAXIMIZE_WINDOW, MOD | MOD_NOREPEAT, 0x46);
    RegisterHotKey(hWnd, HOTKEY_MINIMIZE_ALL_WINDOW, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x4d);
    RegisterHotKey(hWnd, HOTKEY_MAXIMIZE_ALL_WINDOW, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x46);
 
-   RegisterHotKey(hWnd, HOTKEY_SWITHTO_NEXT_WINDOW, MOD | MOD_NOREPEAT, 0x4a); //Mod + j
-   RegisterHotKey(hWnd, HOTKEY_SWITHTO_PREVIOUS_WINDOW, MOD | MOD_NOREPEAT, 0x4b); //Mod + k
+   RegisterHotKey(hWnd, HOTKEY_SWITHTO_NEXT_WINDOW, MOD | MOD_NOREPEAT, 0x4a);
+   RegisterHotKey(hWnd, HOTKEY_SWITHTO_PREVIOUS_WINDOW, MOD | MOD_NOREPEAT, 0x4b);
 
-   RegisterHotKey(hWnd, HOTKEY_SWITHTO_NEXT_WINDOW, MOD | MOD_NOREPEAT, 0x4c); //Mod + l
-   RegisterHotKey(hWnd, HOTKEY_SWITHTO_PREVIOUS_WINDOW, MOD | MOD_NOREPEAT, 0x48); //Mod + h
+   RegisterHotKey(hWnd, HOTKEY_SWITHTO_NEXT_WINDOW, MOD | MOD_NOREPEAT, 0x4c);
+   RegisterHotKey(hWnd, HOTKEY_SWITHTO_PREVIOUS_WINDOW, MOD | MOD_NOREPEAT, 0x48);
 
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_NEXT_WORKSPACE, MOD | MOD_NOREPEAT, 0x4e);
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_PREVIOUS_WORKSPACE, MOD | MOD_NOREPEAT, 0x50);
 
    RegisterHotKey(hWnd, HOTKEY_TILE_VERTICAL, MOD | MOD_NOREPEAT, 0xba);
    RegisterHotKey(hWnd, HOTKEY_TILE_HORIZONTAL, MOD | MOD_NOREPEAT, 0x56);
-   RegisterHotKey(hWnd, HOTKEY_REFRESH_TILE, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x52); //Mod + shift + R
+   RegisterHotKey(hWnd, HOTKEY_REFRESH_TILE, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x52);
 
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_WORKSPACE_1, MOD | MOD_NOREPEAT, 0x31);
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_WORKSPACE_2, MOD | MOD_NOREPEAT, 0x32);
@@ -634,11 +538,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    RegisterHotKey(hWnd, HOTKEY_OPEN_TERMINAL, MOD | MOD_NOREPEAT, 0x0d);
 
-   RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_NEXT, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x4a); //Mod + shift + j
-   RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_PREVIOUS, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x4b); //Mod + shift + k
+   RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_NEXT, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x4a);
+   RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_PREVIOUS, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x4b);
 
-   RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_NEXT, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x4c); //Mod + shift + l
-   RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_PREVIOUS, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x48); //Mod + shift + h
+   RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_NEXT, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x4c);
+   RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_PREVIOUS, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x48);
    
    RegisterHotKey(hWnd, HOTKEY_CLOSE_TESTBAR, MOD | MOD_NOREPEAT, VK_F11);
    RegisterHotKey(hWnd, HOTKEY_TOGGLE_EXPLORER_TASKBAR, MOD | MOD_NOREPEAT, VK_F12);
@@ -670,40 +574,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
-    case WM_COMMAND:
-        {
-            int wmId = LOWORD(wParam);
-            // Parse the menu selections:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
-        }
-        break;
-
-    case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Add any drawing code that uses hdc here...
-            EndPaint(hWnd, &ps);
-        }
-        break;
-
     case WM_DESTROY:
 	{
 		DeregisterShellHookWindow(hWnd);
 
-	   // UnRegister Hotkey
 		UnregisterHotKey(hWnd, HOTKEY_DESTROY_WINDOW);
 
 		UnregisterHotKey(hWnd, HOTKEY_MINIMIZE_WINDOW);
@@ -760,26 +634,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return 0;
-}
-
-// Message handler for about box.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
-
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
 }
 
 BOOL CALLBACK InitWorkSpaces_Callback(HWND hWnd, LPARAM lParam)
@@ -1254,3 +1108,4 @@ void SendCurrentWorkspaceThroughIPC(HWND hWnd)
 
 	SendMessage(testbar, WM_COPYDATA, (WPARAM) hWnd, (LPARAM)(LPVOID) &data);
 }
+
