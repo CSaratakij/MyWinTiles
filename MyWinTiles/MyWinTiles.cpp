@@ -631,8 +631,10 @@ BOOL CALLBACK InitWorkSpaces_Callback(HWND hWnd, LPARAM lParam)
 	if (!IsWindow(hWnd))
 		return TRUE;
 
-	if (AddWindowToWorkspace(hWnd, 1))
+	if (AddWindowToWorkspace(hWnd, 1)) {
 		iterator++;
+		SwitchToWorkspace(1);
+	}
 
 	return TRUE;
 }

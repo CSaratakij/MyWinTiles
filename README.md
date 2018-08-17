@@ -26,7 +26,6 @@ NoWinKeys REG_DWORD 0x00000001 (1)
 
 # Issue
 - Test with Windows 10 (Other windows version don't officially support.)
-- If this program start after some window is open, press [ MOD + 1 ] to add & start focus window.
 - If you want to control some window that start with admin permission, Run this program as adminstrator.
 - Please make sure to run on single instance, terminate this program by Task Manager before restart this program.
 - Some key might interfere with how MyWinTiles behaves, Use [AutoHotkey](https://autohotkey.com/) with [disable key script](interfere_keys.ahk)
