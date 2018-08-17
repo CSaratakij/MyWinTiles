@@ -3,7 +3,7 @@
 #include "resource.h"
 
 #define MOD MOD_ALT
-#define APPBAR_WINDOW_CLASS "TESTBAR"
+#define APPBAR_WINDOW_CLASS "MYWINBAR_TrayWnd"
 
 #define MAX_WORKSPACE 10
 #define MAX_WINDOW_PER_WORKSPACE 20
