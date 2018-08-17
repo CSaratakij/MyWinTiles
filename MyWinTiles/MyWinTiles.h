@@ -3,7 +3,9 @@
 #include "resource.h"
 
 #define MOD MOD_ALT
+
 #define APPBAR_WINDOW_CLASS "MYWINBAR_TrayWnd"
+#define EXPLORER_APPBAR_WINDOW_CLASS "Shell_TrayWnd"
 
 #define MAX_WORKSPACE 10
 #define MAX_WINDOW_PER_WORKSPACE 20
@@ -52,7 +54,6 @@
 #define HOTKEY_MOVEWINDOW_TO_WORKSPACE_9 5009
 #define HOTKEY_MOVEWINDOW_TO_WORKSPACE_10 5010
 
-#define HOTKEY_CLOSE_TESTBAR 8000
 #define HOTKEY_TOGGLE_EXPLORER_TASKBAR 8001
 
 #define OVERLAP_WINDOW_MODE 0x02
@@ -87,5 +88,6 @@ void FocusPreviousWindow();
 void RefreshWorkspace(UINT);
 void UpdateTotalWindowInWorkspace(UINT);
 void SwapCurrentFocusWindow(UINT, UINT);
-void SendCurrentWorkspaceThroughIPC(HWND hWnd);
+void SendCurrentWorkspaceThroughIPC(HWND);
+void ToggleWindow(HWND);
 

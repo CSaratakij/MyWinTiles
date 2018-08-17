@@ -428,25 +428,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				break;
 			}
 
-			case HOTKEY_CLOSE_TESTBAR:
-			{
-				HWND testbar = FindWindow(_T(APPBAR_WINDOW_CLASS), NULL);
-				SendMessage(testbar, WM_CLOSE, NULL, NULL);
-				break;
-			}
-
 			case HOTKEY_TOGGLE_EXPLORER_TASKBAR:
 			{
-				HWND taskbar = FindWindow(_T("Shell_TrayWnd"), NULL);
-
-				if (taskbar == NULL)
-					break;
-
-				if (IsWindowVisible(taskbar))
-					ShowWindow(taskbar, SW_HIDE);
-				else
-					ShowWindow(taskbar, SW_SHOW);
-
+				HWND taskbar = FindWindow(_T(EXPLORER_APPBAR_WINDOW_CLASS), NULL);
+				ToggleWindow(taskbar);
 				break;
 			}
 
@@ -545,7 +530,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_NEXT, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x4c);
    RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_PREVIOUS, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x48);
    
-   RegisterHotKey(hWnd, HOTKEY_CLOSE_TESTBAR, MOD | MOD_NOREPEAT, VK_F11);
    RegisterHotKey(hWnd, HOTKEY_TOGGLE_EXPLORER_TASKBAR, MOD | MOD_NOREPEAT, VK_F12);
 
    for (UINT i = 0; i < MAX_WINDOW_PER_WORKSPACE; ++i) {
@@ -624,7 +608,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		UnregisterHotKey(hWnd, HOTKEY_SWITHTO_NEXT_WINDOW);
 		UnregisterHotKey(hWnd, HOTKEY_SWAPWINDOW_PREVIOUS);
 
-		UnregisterHotKey(hWnd, HOTKEY_CLOSE_TESTBAR);
 		UnregisterHotKey(hWnd, HOTKEY_TOGGLE_EXPLORER_TASKBAR);
 
         PostQuitMessage(0);
@@ -1110,3 +1093,13 @@ void SendCurrentWorkspaceThroughIPC(HWND hWnd)
 	SendMessage(testbar, WM_COPYDATA, (WPARAM) hWnd, (LPARAM)(LPVOID) &data);
 }
 
+void ToggleWindow(HWND hWnd)
+{
+	if (hWnd == NULL)
+		return;
+
+	if (IsWindowVisible(hWnd))
+		ShowWindow(hWnd, SW_HIDE);
+	else
+		ShowWindow(hWnd, SW_SHOW);
+}
