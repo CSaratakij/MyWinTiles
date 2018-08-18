@@ -4,7 +4,7 @@
 
 #define MAX_LOADSTRING 100
 
-HWND bar = NULL;
+HWND appbar = NULL;
 
 int currentFocusIndice[MAX_WORKSPACE];
 int totalWindowInWorkspace[MAX_WORKSPACE];
@@ -68,9 +68,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			case HSHELL_WINDOWCREATED:
 			{
 				HWND hWnd = (HWND)msg.lParam;
-				bar = FindWindow(_T(APPBAR_WINDOW_CLASS), NULL);
+				appbar = FindWindow(_T(APPBAR_WINDOW_CLASS), NULL);
 
-				if (bar != NULL && bar == hWnd)
+				if (appbar != NULL && appbar == hWnd)
 					break;
 
 				if (!IsWindow(hWnd) && IsValidWindow(hWnd))
@@ -107,25 +107,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			case HSHELL_RUDEAPPACTIVATED:
 			{
+				HWND hWnd = (HWND) msg.lParam;
+				SendCurrentFocusWindowThroughIPC(msg.hwnd, hWnd);
+
 				if (isFocusByHotkey) {
 					isFocusByHotkey = FALSE;
 					break;
 				}
 
-				HWND hWnd = (HWND) msg.lParam;
-
-				int indice = currentFocusIndice[currentWorkSpace - 1];
-				HWND* currentAry = GetWorkspaceByID(currentWorkSpace);
-
-				if (hWnd != currentAry[indice]) {
-					for (UINT i = 0; i < MAX_WORKSPACE; ++i) {
-						if (currentAry[i] == hWnd) {
-							currentFocusIndice[currentWorkSpace - 1] = i;
-							break;
-						}
-					}
-				}
-
+				UpdateFocusIndice(currentWorkSpace, hWnd);
 				break;
 			}
 
@@ -1081,9 +1071,9 @@ void SwapCurrentFocusWindow(UINT workspace, UINT swapType)
 void SendCurrentWorkspaceThroughIPC(HWND hWnd)
 {
 	ULONG updateCurrentWorkspace = 1;
-	HWND testbar = FindWindow(_T(APPBAR_WINDOW_CLASS), NULL);
+	appbar = FindWindow(_T(APPBAR_WINDOW_CLASS), NULL);
 
-	if (testbar == NULL)
+	if (appbar == NULL)
 		return;
 
 	COPYDATASTRUCT data;
@@ -1092,7 +1082,24 @@ void SendCurrentWorkspaceThroughIPC(HWND hWnd)
 	data.cbData = sizeof(UINT);
 	data.lpData = &currentWorkSpace;
 
-	SendMessage(testbar, WM_COPYDATA, (WPARAM) hWnd, (LPARAM)(LPVOID) &data);
+	SendMessage(appbar, WM_COPYDATA, (WPARAM) hWnd, (LPARAM)(LPVOID) &data);
+}
+
+void SendCurrentFocusWindowThroughIPC(HWND currentWindow, HWND focusWindow)
+{
+	ULONG updateFocusWindow = 2;
+	appbar = FindWindow(_T(APPBAR_WINDOW_CLASS), NULL);
+
+	if (appbar == NULL)
+		return;
+
+	COPYDATASTRUCT data;
+
+	data.dwData = updateFocusWindow;
+	data.cbData = sizeof(HWND);
+	data.lpData = &focusWindow;
+
+	SendMessage(appbar, WM_COPYDATA, (WPARAM) currentWindow, (LPARAM)(LPVOID) &data);
 }
 
 void ToggleWindow(HWND hWnd)
@@ -1104,4 +1111,22 @@ void ToggleWindow(HWND hWnd)
 		ShowWindow(hWnd, SW_HIDE);
 	else
 		ShowWindow(hWnd, SW_SHOW);
+}
+
+void UpdateFocusIndice(UINT workspaceID, HWND hWnd)
+{
+	if (workspaceID > MAX_WORKSPACE)
+		return;
+
+	int indice = currentFocusIndice[workspaceID - 1];
+	HWND* currentAry = GetWorkspaceByID(workspaceID);
+
+	if (hWnd != currentAry[indice]) {
+		for (UINT i = 0; i < MAX_WORKSPACE; ++i) {
+			if (currentAry[i] == hWnd) {
+				currentFocusIndice[workspaceID - 1] = i;
+				break;
+			}
+		}
+	}
 }
