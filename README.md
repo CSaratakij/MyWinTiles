@@ -23,6 +23,8 @@ NoWinKeys REG_DWORD 0x00000001 (1)
 
 # Additional
 - You might want to use [MyWinBar](https://github.com/CSaratakij/MyWinBar), an AppBar for MyWinTiles.
+- You might want to use [Wox](https://github.com/Wox-launcher/Wox), an alternative App Launcher of choice for MyWinTiles.
+Use with [Optional Disable Key](optinal_disable_keys.ahk) for convenience.
 
 # Issue
 - Test with Windows 10 (Other windows version don't officially support.)
@@ -33,3 +35,4 @@ NoWinKeys REG_DWORD 0x00000001 (1)
 
 # License
 - [GNU GPLv3](LICENSE)
+
