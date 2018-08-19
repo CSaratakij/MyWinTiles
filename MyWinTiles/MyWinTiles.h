@@ -89,5 +89,6 @@ void RefreshWorkspace(UINT);
 void UpdateTotalWindowInWorkspace(UINT);
 void SwapCurrentFocusWindow(UINT, UINT);
 void SendCurrentWorkspaceThroughIPC(HWND);
+void SendCurrentFocusWindowThroughIPC(HWND, HWND);
 void ToggleWindow(HWND);
-
+void UpdateFocusIndice(UINT, HWND);
