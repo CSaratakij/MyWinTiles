@@ -425,6 +425,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				break;
 			}
 
+			case HOTKEY_QUIT_APP:
+			{
+				UINT dialogStyle = MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2 | MB_APPLMODAL | MB_SETFOREGROUND | MB_TOPMOST;
+				int result = MessageBox(NULL, L"Do you want to quit MyWinTiles?", L"Warnning", dialogStyle);
+				if (result == IDYES)
+					DestroyWindow(msg.hwnd);
+				break;
+			}
+
 			default:
 				break;
 			}
@@ -521,6 +530,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_PREVIOUS, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x48);
    
    RegisterHotKey(hWnd, HOTKEY_TOGGLE_EXPLORER_TASKBAR, MOD | MOD_NOREPEAT, VK_F12);
+   RegisterHotKey(hWnd, HOTKEY_QUIT_APP, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x45);
 
    for (UINT i = 0; i < MAX_WINDOW_PER_WORKSPACE; ++i) {
 	   windowOfWorkSpace1[i] = NULL;
@@ -542,6 +552,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    }
 
    EnumWindows(&InitWorkSpaces_Callback, NULL);
+   SendCurrentWorkspaceThroughIPC(hWnd);
+
    return TRUE;
 }
 
@@ -599,6 +611,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		UnregisterHotKey(hWnd, HOTKEY_SWAPWINDOW_PREVIOUS);
 
 		UnregisterHotKey(hWnd, HOTKEY_TOGGLE_EXPLORER_TASKBAR);
+		UnregisterHotKey(hWnd, HOTKEY_QUIT_APP);
 
         PostQuitMessage(0);
         break;
@@ -1109,6 +1122,7 @@ void ToggleWindow(HWND hWnd)
 
 	if (IsWindowVisible(hWnd))
 		ShowWindow(hWnd, SW_HIDE);
+
 	else
 		ShowWindow(hWnd, SW_SHOW);
 }
