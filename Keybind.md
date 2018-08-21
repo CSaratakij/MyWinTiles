@@ -36,4 +36,5 @@
 [ Mod + Shift + 9 ] - Move window to workspace 9
 [ Mod + Shift + 0 ] - Move window to workspace 10
 [ Mod + F12 ] - Toggle Explorer Shell's Taskbar
+[ Mod + Shift + E ] - Open propmt to quit MyWinTiles
 ```
