@@ -5,6 +5,7 @@
 #define MAX_LOADSTRING 100
 
 HWND appbar = NULL;
+unsigned short currentWorkSpaceInfo = 0;
 
 int currentFocusIndice[MAX_WORKSPACE];
 int totalWindowInWorkspace[MAX_WORKSPACE];
@@ -312,8 +313,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (currentWorkSpace != 1) {
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 1);
-					UpdateCurrentWorkspaceLayout();
 					totalWindowInWorkspace[0] += 1;
+					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
 				break;
@@ -323,8 +325,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (currentWorkSpace != 2) {
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 2);
-					UpdateCurrentWorkspaceLayout();
 					totalWindowInWorkspace[1] += 1;
+					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
 				break;
@@ -334,8 +337,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (currentWorkSpace != 3) {
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 3);
-					UpdateCurrentWorkspaceLayout();
 					totalWindowInWorkspace[2] += 1;
+					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
 				break;
@@ -345,8 +349,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (currentWorkSpace != 4) {
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 4);
-					UpdateCurrentWorkspaceLayout();
 					totalWindowInWorkspace[3] += 1;
+					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
 				break;
@@ -356,8 +361,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (currentWorkSpace != 5) {
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 5);
-					UpdateCurrentWorkspaceLayout();
 					totalWindowInWorkspace[4] += 1;
+					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
 				break;
@@ -367,8 +373,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (currentWorkSpace != 6) {
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 6);
-					UpdateCurrentWorkspaceLayout();
 					totalWindowInWorkspace[5] += 1;
+					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
 				break;
@@ -378,8 +385,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (currentWorkSpace != 7) {
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 7);
-					UpdateCurrentWorkspaceLayout();
 					totalWindowInWorkspace[6] += 1;
+					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
 				break;
@@ -389,8 +397,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (currentWorkSpace != 8) {
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 8);
-					UpdateCurrentWorkspaceLayout();
 					totalWindowInWorkspace[7] += 1;
+					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
 				break;
@@ -400,8 +409,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (currentWorkSpace != 9) {
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 9);
-					UpdateCurrentWorkspaceLayout();
 					totalWindowInWorkspace[8] += 1;
+					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
 				break;
@@ -411,8 +421,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				if (currentWorkSpace != 10) {
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 10);
-					UpdateCurrentWorkspaceLayout();
 					totalWindowInWorkspace[9] += 1;
+					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
 				break;
@@ -1089,11 +1100,19 @@ void SendCurrentWorkspaceThroughIPC(HWND hWnd)
 	if (appbar == NULL)
 		return;
 
+	currentWorkSpaceInfo = (currentWorkSpace << MAX_WORKSPACE);
+
+	for (UINT i = 0; i < MAX_WORKSPACE; ++i) {
+		if (totalWindowInWorkspace[i] > 0) {
+			currentWorkSpaceInfo |= (1 << i);
+		}
+	}
+
 	COPYDATASTRUCT data;
 
 	data.dwData = updateCurrentWorkspace;
-	data.cbData = sizeof(UINT);
-	data.lpData = &currentWorkSpace;
+	data.cbData = sizeof(unsigned short);
+	data.lpData = &currentWorkSpaceInfo;
 
 	SendMessage(appbar, WM_COPYDATA, (WPARAM) hWnd, (LPARAM)(LPVOID) &data);
 }
