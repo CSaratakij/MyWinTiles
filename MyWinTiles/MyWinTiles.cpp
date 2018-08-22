@@ -198,7 +198,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				SwitchToWorkspace(1);
 				FocusWindow(1, currentFocusIndice[0]);
-				SendCurrentWorkspaceThroughIPC(msg.hwnd);
+				SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 				break;
 			}
 
@@ -206,49 +206,49 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				SwitchToWorkspace(2);
 				FocusWindow(2, currentFocusIndice[1]);
-				SendCurrentWorkspaceThroughIPC(msg.hwnd);
+				SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 				break;
 			}
 			case HOTKEY_SWITHTO_WORKSPACE_3:
 			{
 				SwitchToWorkspace(3);
 				FocusWindow(3, currentFocusIndice[2]);
-				SendCurrentWorkspaceThroughIPC(msg.hwnd);
+				SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 				break;
 			}
 			case HOTKEY_SWITHTO_WORKSPACE_4:
 			{
 				SwitchToWorkspace(4);
 				FocusWindow(4, currentFocusIndice[3]);
-				SendCurrentWorkspaceThroughIPC(msg.hwnd);
+				SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 				break;
 			}
 			case HOTKEY_SWITHTO_WORKSPACE_5:
 			{
 				SwitchToWorkspace(5);
 				FocusWindow(5, currentFocusIndice[4]);
-				SendCurrentWorkspaceThroughIPC(msg.hwnd);
+				SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 				break;
 			}
 			case HOTKEY_SWITHTO_WORKSPACE_6:
 			{
 				SwitchToWorkspace(6);
 				FocusWindow(6, currentFocusIndice[5]);
-				SendCurrentWorkspaceThroughIPC(msg.hwnd);
+				SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 				break;
 			}
 			case HOTKEY_SWITHTO_WORKSPACE_7:
 			{
 				SwitchToWorkspace(7);
 				FocusWindow(7, currentFocusIndice[6]);
-				SendCurrentWorkspaceThroughIPC(msg.hwnd);
+				SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 				break;
 			}
 			case HOTKEY_SWITHTO_WORKSPACE_8:
 			{
 				SwitchToWorkspace(8);
 				FocusWindow(8, currentFocusIndice[7]);
-				SendCurrentWorkspaceThroughIPC(msg.hwnd);
+				SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 				break;
 			}
 
@@ -256,7 +256,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				SwitchToWorkspace(9);
 				FocusWindow(9, currentFocusIndice[8]);
-				SendCurrentWorkspaceThroughIPC(msg.hwnd);
+				SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 				break;
 			}
 
@@ -264,7 +264,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				SwitchToWorkspace(10);
 				FocusWindow(10, currentFocusIndice[9]);
-				SendCurrentWorkspaceThroughIPC(msg.hwnd);
+				SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 				break;
 			}
 
@@ -284,7 +284,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				SwitchToNextWorkspace();
 				FocusWindow(currentWorkSpace, currentFocusIndice[currentWorkSpace - 1]);
-				SendCurrentWorkspaceThroughIPC(msg.hwnd);
+				SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 				break;
 			}
 
@@ -292,7 +292,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				SwitchToPreviousWorkspace();
 				FocusWindow(currentWorkSpace, currentFocusIndice[currentWorkSpace - 1]);
-				SendCurrentWorkspaceThroughIPC(msg.hwnd);
+				SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 				break;
 			}
 
@@ -314,7 +314,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 1);
 					totalWindowInWorkspace[0] += 1;
-					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
@@ -326,7 +326,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 2);
 					totalWindowInWorkspace[1] += 1;
-					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
@@ -338,7 +338,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 3);
 					totalWindowInWorkspace[2] += 1;
-					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
@@ -350,7 +350,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 4);
 					totalWindowInWorkspace[3] += 1;
-					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
@@ -362,7 +362,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 5);
 					totalWindowInWorkspace[4] += 1;
-					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
@@ -374,7 +374,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 6);
 					totalWindowInWorkspace[5] += 1;
-					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
@@ -386,7 +386,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 7);
 					totalWindowInWorkspace[6] += 1;
-					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
@@ -398,7 +398,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 8);
 					totalWindowInWorkspace[7] += 1;
-					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
@@ -410,7 +410,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 9);
 					totalWindowInWorkspace[8] += 1;
-					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
@@ -422,7 +422,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 					HWND targetWindow = GetForegroundWindow();
 					MoveWindowToWorkspaceByID(targetWindow, currentWorkSpace, 10);
 					totalWindowInWorkspace[9] += 1;
-					SendCurrentWorkspaceThroughIPC(msg.hwnd);
+					SendCurrentWorkspaceInfoThroughIPC(msg.hwnd);
 					UpdateCurrentWorkspaceLayout();
 					FocusPreviousWindow();
 				}
@@ -438,7 +438,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			case HOTKEY_QUIT_APP:
 			{
-				UINT dialogStyle = MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2 | MB_APPLMODAL | MB_SETFOREGROUND | MB_TOPMOST;
+				UINT dialogStyle = (MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2 | MB_APPLMODAL | MB_SETFOREGROUND | MB_TOPMOST);
 				int result = MessageBox(NULL, L"Do you want to quit MyWinTiles?", L"Warnning", dialogStyle);
 				if (result == IDYES)
 					DestroyWindow(msg.hwnd);
@@ -457,7 +457,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
     WNDCLASSEXW wcex;
-
     wcex.cbSize = sizeof(WNDCLASSEX);
 
     wcex.style          = CS_HREDRAW | CS_VREDRAW;
@@ -496,20 +495,15 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RegisterHotKey(hWnd, HOTKEY_MAXIMIZE_WINDOW, MOD | MOD_NOREPEAT, 0x46);
    RegisterHotKey(hWnd, HOTKEY_MINIMIZE_ALL_WINDOW, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x4d);
    RegisterHotKey(hWnd, HOTKEY_MAXIMIZE_ALL_WINDOW, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x46);
-
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_NEXT_WINDOW, MOD | MOD_NOREPEAT, 0x4a);
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_PREVIOUS_WINDOW, MOD | MOD_NOREPEAT, 0x4b);
-
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_NEXT_WINDOW, MOD | MOD_NOREPEAT, 0x4c);
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_PREVIOUS_WINDOW, MOD | MOD_NOREPEAT, 0x48);
-
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_NEXT_WORKSPACE, MOD | MOD_NOREPEAT, 0x4e);
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_PREVIOUS_WORKSPACE, MOD | MOD_NOREPEAT, 0x50);
-
    RegisterHotKey(hWnd, HOTKEY_TILE_VERTICAL, MOD | MOD_NOREPEAT, 0xba);
    RegisterHotKey(hWnd, HOTKEY_TILE_HORIZONTAL, MOD | MOD_NOREPEAT, 0x56);
    RegisterHotKey(hWnd, HOTKEY_REFRESH_TILE, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x52);
-
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_WORKSPACE_1, MOD | MOD_NOREPEAT, 0x31);
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_WORKSPACE_2, MOD | MOD_NOREPEAT, 0x32);
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_WORKSPACE_3, MOD | MOD_NOREPEAT, 0x33);
@@ -520,7 +514,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_WORKSPACE_8, MOD | MOD_NOREPEAT, 0x38);
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_WORKSPACE_9, MOD | MOD_NOREPEAT, 0x39);
    RegisterHotKey(hWnd, HOTKEY_SWITHTO_WORKSPACE_10, MOD | MOD_NOREPEAT, 0x30);
-
    RegisterHotKey(hWnd, HOTKEY_MOVEWINDOW_TO_WORKSPACE_1, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x31);
    RegisterHotKey(hWnd, HOTKEY_MOVEWINDOW_TO_WORKSPACE_2, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x32);
    RegisterHotKey(hWnd, HOTKEY_MOVEWINDOW_TO_WORKSPACE_3, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x33);
@@ -531,15 +524,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RegisterHotKey(hWnd, HOTKEY_MOVEWINDOW_TO_WORKSPACE_8, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x38);
    RegisterHotKey(hWnd, HOTKEY_MOVEWINDOW_TO_WORKSPACE_9, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x39);
    RegisterHotKey(hWnd, HOTKEY_MOVEWINDOW_TO_WORKSPACE_10, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x30);
-
    RegisterHotKey(hWnd, HOTKEY_OPEN_TERMINAL, MOD | MOD_NOREPEAT, 0x0d);
-
    RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_NEXT, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x4a);
    RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_PREVIOUS, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x4b);
-
    RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_NEXT, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x4c);
    RegisterHotKey(hWnd, HOTKEY_SWAPWINDOW_PREVIOUS, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x48);
-   
    RegisterHotKey(hWnd, HOTKEY_TOGGLE_EXPLORER_TASKBAR, MOD | MOD_NOREPEAT, VK_F12);
    RegisterHotKey(hWnd, HOTKEY_QUIT_APP, MOD | MOD_SHIFT | MOD_NOREPEAT, 0x45);
 
@@ -563,7 +552,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    }
 
    EnumWindows(&InitWorkSpaces_Callback, NULL);
-   SendCurrentWorkspaceThroughIPC(hWnd);
+   SendCurrentWorkspaceInfoThroughIPC(hWnd);
 
    return TRUE;
 }
@@ -577,25 +566,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		DeregisterShellHookWindow(hWnd);
 
 		UnregisterHotKey(hWnd, HOTKEY_DESTROY_WINDOW);
-
 		UnregisterHotKey(hWnd, HOTKEY_MINIMIZE_WINDOW);
 		UnregisterHotKey(hWnd, HOTKEY_MAXIMIZE_WINDOW);
-
 		UnregisterHotKey(hWnd, HOTKEY_MINIMIZE_ALL_WINDOW);
 		UnregisterHotKey(hWnd, HOTKEY_MAXIMIZE_ALL_WINDOW);
-
 		UnregisterHotKey(hWnd, HOTKEY_TILE_VERTICAL);
 		UnregisterHotKey(hWnd, HOTKEY_TILE_HORIZONTAL);
 		UnregisterHotKey(hWnd, HOTKEY_REFRESH_TILE);
-
 		UnregisterHotKey(hWnd, HOTKEY_OPEN_TERMINAL);
-
 		UnregisterHotKey(hWnd, HOTKEY_SWITHTO_NEXT_WINDOW);
 		UnregisterHotKey(hWnd, HOTKEY_SWITHTO_PREVIOUS_WINDOW);
-
 		UnregisterHotKey(hWnd, HOTKEY_SWITHTO_NEXT_WORKSPACE);
 		UnregisterHotKey(hWnd, HOTKEY_SWITHTO_PREVIOUS_WORKSPACE);
-
 		UnregisterHotKey(hWnd, HOTKEY_SWITHTO_WORKSPACE_1);
 		UnregisterHotKey(hWnd, HOTKEY_SWITHTO_WORKSPACE_2);
 		UnregisterHotKey(hWnd, HOTKEY_SWITHTO_WORKSPACE_3);
@@ -606,7 +588,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		UnregisterHotKey(hWnd, HOTKEY_SWITHTO_WORKSPACE_8);
 		UnregisterHotKey(hWnd, HOTKEY_SWITHTO_WORKSPACE_9);
 		UnregisterHotKey(hWnd, HOTKEY_SWITHTO_WORKSPACE_10);
-
 		UnregisterHotKey(hWnd, HOTKEY_MOVEWINDOW_TO_WORKSPACE_1);
 		UnregisterHotKey(hWnd, HOTKEY_MOVEWINDOW_TO_WORKSPACE_2);
 		UnregisterHotKey(hWnd, HOTKEY_MOVEWINDOW_TO_WORKSPACE_3);
@@ -617,10 +598,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		UnregisterHotKey(hWnd, HOTKEY_MOVEWINDOW_TO_WORKSPACE_8);
 		UnregisterHotKey(hWnd, HOTKEY_MOVEWINDOW_TO_WORKSPACE_9);
 		UnregisterHotKey(hWnd, HOTKEY_MOVEWINDOW_TO_WORKSPACE_10);
-
 		UnregisterHotKey(hWnd, HOTKEY_SWITHTO_NEXT_WINDOW);
 		UnregisterHotKey(hWnd, HOTKEY_SWAPWINDOW_PREVIOUS);
-
 		UnregisterHotKey(hWnd, HOTKEY_TOGGLE_EXPLORER_TASKBAR);
 		UnregisterHotKey(hWnd, HOTKEY_QUIT_APP);
 
@@ -1092,9 +1071,8 @@ void SwapCurrentFocusWindow(UINT workspace, UINT swapType)
 	}
 }
 
-void SendCurrentWorkspaceThroughIPC(HWND hWnd)
+void SendCurrentWorkspaceInfoThroughIPC(HWND hWnd)
 {
-	ULONG updateCurrentWorkspace = 1;
 	appbar = FindWindow(_T(APPBAR_WINDOW_CLASS), NULL);
 
 	if (appbar == NULL)
@@ -1110,7 +1088,7 @@ void SendCurrentWorkspaceThroughIPC(HWND hWnd)
 
 	COPYDATASTRUCT data;
 
-	data.dwData = updateCurrentWorkspace;
+	data.dwData = APPBAR_UPDATE_CURRENT_WORKSPACE;
 	data.cbData = sizeof(unsigned short);
 	data.lpData = &currentWorkSpaceInfo;
 
@@ -1119,7 +1097,6 @@ void SendCurrentWorkspaceThroughIPC(HWND hWnd)
 
 void SendCurrentFocusWindowThroughIPC(HWND currentWindow, HWND focusWindow)
 {
-	ULONG updateFocusWindow = 2;
 	appbar = FindWindow(_T(APPBAR_WINDOW_CLASS), NULL);
 
 	if (appbar == NULL)
@@ -1127,7 +1104,7 @@ void SendCurrentFocusWindowThroughIPC(HWND currentWindow, HWND focusWindow)
 
 	COPYDATASTRUCT data;
 
-	data.dwData = updateFocusWindow;
+	data.dwData = APPBAR_UPDATE_CURRENT_FOCUS_WINDOW;
 	data.cbData = sizeof(HWND);
 	data.lpData = &focusWindow;
 
@@ -1141,7 +1118,6 @@ void ToggleWindow(HWND hWnd)
 
 	if (IsWindowVisible(hWnd))
 		ShowWindow(hWnd, SW_HIDE);
-
 	else
 		ShowWindow(hWnd, SW_SHOW);
 }

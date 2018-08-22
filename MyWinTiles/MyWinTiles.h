@@ -62,6 +62,9 @@
 #define SWAPWINDOW_NEXT 0x01
 #define SWAPWINDOW_PREVIOUS 0x02
 
+#define APPBAR_UPDATE_CURRENT_WORKSPACE 1
+#define APPBAR_UPDATE_CURRENT_FOCUS_WINDOW 2
+
 BOOL CALLBACK InitWorkSpaces_Callback(HWND, LPARAM);
 BOOL CALLBACK MaximizeAllWindows(HWND, LPARAM);
 BOOL CALLBACK MinimizeAllWindows(HWND, LPARAM);
@@ -89,7 +92,7 @@ void FocusPreviousWindow();
 void RefreshWorkspace(UINT);
 void UpdateTotalWindowInWorkspace(UINT);
 void SwapCurrentFocusWindow(UINT, UINT);
-void SendCurrentWorkspaceThroughIPC(HWND);
+void SendCurrentWorkspaceInfoThroughIPC(HWND);
 void SendCurrentFocusWindowThroughIPC(HWND, HWND);
 void ToggleWindow(HWND);
 void UpdateFocusIndice(UINT, HWND);
