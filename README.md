@@ -32,6 +32,8 @@ Use with [Optional Disable Key](optinal_disable_keys.ahk) for convenience.
 - Please make sure to run on single instance, terminate this program by Task Manager before restart this program.
 - Some key might interfere with how MyWinTiles behaves, Use [AutoHotkey](https://autohotkey.com/) with [disable key script](interfere_keys.ahk)
 (Run as Startup is recommend)
+- Right now, each Workspace only support 20 window and there is only 10 workspace.
+So, you can manage window up to 200 window per desktop.
 
 # License
 - [GNU GPLv3](LICENSE)
