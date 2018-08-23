@@ -1081,7 +1081,8 @@ void SendCurrentWorkspaceInfoThroughIPC(HWND hWnd)
 	currentWorkSpaceInfo = (currentWorkSpace << MAX_WORKSPACE);
 
 	for (UINT i = 0; i < MAX_WORKSPACE; ++i) {
-		if (totalWindowInWorkspace[i] > 0) {
+		HWND firstWindow = GetWindowByWorkspaceID((i + 1), 0);
+		if (IsWindow(firstWindow)) {
 			currentWorkSpaceInfo |= (1 << i);
 		}
 	}
