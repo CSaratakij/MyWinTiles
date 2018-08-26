@@ -647,10 +647,27 @@ BOOL CALLBACK MaximizeAllWindows(HWND hWnd, LPARAM lParam)
 {
 	int workspaceID = (int)lParam;
 
+	RECT rect;
+	rect.left = 0;
+	rect.top = 0;
+	rect.right = GetSystemMetrics(SM_CXSCREEN);
+	rect.bottom = GetSystemMetrics(SM_CYSCREEN);
+
+	POINT origin = { 0 };
+
+	WINDOWPLACEMENT windowPlacement;
+	windowPlacement.length = sizeof(WINDOWPLACEMENT);
+	windowPlacement.flags = WPF_ASYNCWINDOWPLACEMENT;
+	windowPlacement.showCmd = SW_SHOWNOACTIVATE;
+	windowPlacement.ptMinPosition = origin;
+	windowPlacement.ptMaxPosition = origin;
+	windowPlacement.rcNormalPosition = rect;
+
 	for (UINT i = 0; i < MAX_WINDOW_PER_WORKSPACE; ++i) {
 		HWND target = NULL;
 		target = GetWindowByWorkspaceID(workspaceID, i);
-		ShowWindow(target, SW_MAXIMIZE);
+		SetWindowPlacement(target, &windowPlacement);
+		ShowWindowAsync(target, SW_RESTORE);
 	}
 
 	return FALSE;
@@ -933,10 +950,7 @@ void HideWorkspaceByID(UINT id)
 			UpdateTotalWindowInWorkspace(id);
 		}
 
-		if (workspaceTileMode[id - 1] == OVERLAP_WINDOW_MODE)
-			ShowWindow(hWnd, SW_MINIMIZE);
-		else
-			ShowWindowAsync(hWnd, SW_MINIMIZE);
+		ShowWindowAsync(hWnd, SW_MINIMIZE);
 	}
 }
 
@@ -950,7 +964,7 @@ void ShowWorkspaceByID(UINT id)
 	for (UINT i = 0; i < MAX_WINDOW_PER_WORKSPACE; ++i) {
 		HWND hWnd = currentWindows[i];
 		if (IsWindow(hWnd))
-			ShowWindow(hWnd, SW_SHOWNOACTIVATE);
+			ShowWindowAsync(hWnd, SW_SHOWNOACTIVATE);
 		else
 			currentWindows[i] = NULL;
 	}
