@@ -661,14 +661,18 @@ BOOL CALLBACK MinimizeAllWindows(HWND hWnd, LPARAM lParam)
 BOOL CALLBACK MaximizeAllWindows(HWND hWnd, LPARAM lParam)
 {
 	int workspaceID = (int)lParam;
+	POINT origin = { 0 };
 
 	RECT rect;
+	SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
+
+	int width = (rect.right - rect.left);
+	int height = (rect.bottom - rect.top);
+
 	rect.left = 0;
 	rect.top = 0;
-	rect.right = GetSystemMetrics(SM_CXSCREEN);
-	rect.bottom = GetSystemMetrics(SM_CYSCREEN);
-
-	POINT origin = { 0 };
+	rect.right = width;
+	rect.bottom = height;
 
 	WINDOWPLACEMENT windowPlacement;
 	windowPlacement.length = sizeof(WINDOWPLACEMENT);
@@ -973,8 +977,11 @@ void TileWindowVerticalThreeSplit(HWND* currentAry)
 	windowPlacement.ptMinPosition = origin;
 	windowPlacement.ptMaxPosition = origin;
 
-	int width = GetSystemMetrics(SM_CXSCREEN);
-	int height = GetSystemMetrics(SM_CYSCREEN);
+	RECT rect;
+	SystemParametersInfo(SPI_GETWORKAREA, 0, &rect, 0);
+
+	int width = (rect.right - rect.left);
+	int height = (rect.bottom - rect.top);
 
 	RECT topLeft;
 	topLeft.left = 0;
