@@ -94,5 +94,5 @@ void UpdateTotalWindowInWorkspace(UINT);
 void SwapCurrentFocusWindow(UINT, UINT);
 void SendCurrentWorkspaceInfoThroughIPC(HWND);
 void SendCurrentFocusWindowThroughIPC(HWND, HWND);
-void ToggleWindow(HWND);
+void ToggleExplorerTaskbar();
 void UpdateFocusIndice(UINT, HWND);

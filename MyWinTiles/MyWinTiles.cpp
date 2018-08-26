@@ -30,6 +30,8 @@ HWND windowOfWorkSpace8[MAX_WINDOW_PER_WORKSPACE];
 HWND windowOfWorkSpace9[MAX_WINDOW_PER_WORKSPACE];
 HWND windowOfWorkSpace10[MAX_WINDOW_PER_WORKSPACE];
 
+APPBARDATA explorerTaskbar;
+
 HINSTANCE hInst;
 WCHAR szTitle[MAX_LOADSTRING];
 WCHAR szWindowClass[MAX_LOADSTRING];
@@ -320,6 +322,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				break;
 			}
+
 			case HOTKEY_MOVEWINDOW_TO_WORKSPACE_2:
 			{
 				if (currentWorkSpace != 2) {
@@ -332,6 +335,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				break;
 			}
+
 			case HOTKEY_MOVEWINDOW_TO_WORKSPACE_3:
 			{
 				if (currentWorkSpace != 3) {
@@ -344,6 +348,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				break;
 			}
+
 			case HOTKEY_MOVEWINDOW_TO_WORKSPACE_4:
 			{
 				if (currentWorkSpace != 4) {
@@ -356,6 +361,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				break;
 			}
+
 			case HOTKEY_MOVEWINDOW_TO_WORKSPACE_5:
 			{
 				if (currentWorkSpace != 5) {
@@ -368,6 +374,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				break;
 			}
+
 			case HOTKEY_MOVEWINDOW_TO_WORKSPACE_6:
 			{
 				if (currentWorkSpace != 6) {
@@ -380,6 +387,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				break;
 			}
+
 			case HOTKEY_MOVEWINDOW_TO_WORKSPACE_7:
 			{
 				if (currentWorkSpace != 7) {
@@ -392,6 +400,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				break;
 			}
+
 			case HOTKEY_MOVEWINDOW_TO_WORKSPACE_8:
 			{
 				if (currentWorkSpace != 8) {
@@ -404,6 +413,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				break;
 			}
+
 			case HOTKEY_MOVEWINDOW_TO_WORKSPACE_9:
 			{
 				if (currentWorkSpace != 9) {
@@ -416,6 +426,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 				break;
 			}
+
 			case HOTKEY_MOVEWINDOW_TO_WORKSPACE_10:
 			{
 				if (currentWorkSpace != 10) {
@@ -431,8 +442,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 			case HOTKEY_TOGGLE_EXPLORER_TASKBAR:
 			{
-				HWND taskbar = FindWindow(_T(EXPLORER_APPBAR_WINDOW_CLASS), NULL);
-				ToggleWindow(taskbar);
+				ToggleExplorerTaskbar();
 				break;
 			}
 
@@ -551,6 +561,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	   totalWindowInWorkspace[i] = 0;
    }
 
+   explorerTaskbar.cbSize = sizeof(APPBARDATA);
+   explorerTaskbar.hWnd = FindWindow(_T(EXPLORER_APPBAR_WINDOW_CLASS), NULL);
+   explorerTaskbar.uEdge = ABE_BOTTOM;
+   SHAppBarMessage(ABM_GETTASKBARPOS, &explorerTaskbar);
+
    EnumWindows(&InitWorkSpaces_Callback, NULL);
    SendCurrentWorkspaceInfoThroughIPC(hWnd);
 
@@ -603,14 +618,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		UnregisterHotKey(hWnd, HOTKEY_TOGGLE_EXPLORER_TASKBAR);
 		UnregisterHotKey(hWnd, HOTKEY_QUIT_APP);
 
-        PostQuitMessage(0);
-        break;
-	}
+		PostQuitMessage(0);
+		break;
+		}
 
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
-    }
-    return 0;
+		default:
+			return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
 }
 
 BOOL CALLBACK InitWorkSpaces_Callback(HWND hWnd, LPARAM lParam)
@@ -666,7 +681,13 @@ BOOL CALLBACK MaximizeAllWindows(HWND hWnd, LPARAM lParam)
 	for (UINT i = 0; i < MAX_WINDOW_PER_WORKSPACE; ++i) {
 		HWND target = NULL;
 		target = GetWindowByWorkspaceID(workspaceID, i);
-		SetWindowPlacement(target, &windowPlacement);
+
+		UINT targetStyle = GetWindowLong(target, GWL_EXSTYLE);
+
+		if ((targetStyle & WS_EX_TOPMOST) != WS_EX_TOPMOST || (targetStyle & WS_EX_TOOLWINDOW) != WS_EX_TOOLWINDOW) {
+			SetWindowPlacement(target, &windowPlacement);
+		}
+
 		ShowWindowAsync(target, SW_RESTORE);
 	}
 
@@ -1126,15 +1147,29 @@ void SendCurrentFocusWindowThroughIPC(HWND currentWindow, HWND focusWindow)
 	SendMessage(appbar, WM_COPYDATA, (WPARAM) currentWindow, (LPARAM)(LPVOID) &data);
 }
 
-void ToggleWindow(HWND hWnd)
+void ToggleExplorerTaskbar()
 {
-	if (hWnd == NULL)
+	HWND taskbar = FindWindow(_T(EXPLORER_APPBAR_WINDOW_CLASS), NULL);
+
+	if (taskbar == NULL)
 		return;
 
-	if (IsWindowVisible(hWnd))
-		ShowWindow(hWnd, SW_HIDE);
-	else
-		ShowWindow(hWnd, SW_SHOW);
+	explorerTaskbar.hWnd = taskbar;
+
+	if (IsWindowVisible(taskbar)) {
+		explorerTaskbar.lParam = ABS_AUTOHIDE;
+		SHAppBarMessage(ABM_SETSTATE, &explorerTaskbar);
+		explorerTaskbar.lParam = FALSE;
+		SHAppBarMessage(ABM_ACTIVATE, &explorerTaskbar);
+		ShowWindow(taskbar, SW_HIDE);
+	}
+	else {
+		explorerTaskbar.lParam = 0;
+		SHAppBarMessage(ABM_SETSTATE, &explorerTaskbar);
+		explorerTaskbar.lParam = TRUE;
+		SHAppBarMessage(ABM_ACTIVATE, &explorerTaskbar);
+		ShowWindow(taskbar, SW_SHOW);
+	}
 }
 
 void UpdateFocusIndice(UINT workspaceID, HWND hWnd)
