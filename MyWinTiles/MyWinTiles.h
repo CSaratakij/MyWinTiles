@@ -82,6 +82,7 @@ void SwitchToNextWorkspace();
 void SwitchToPreviousWorkspace();
 void TileWindowVertical();
 void TileWindowHorizontal();
+void TileWindowVerticalThreeSplit(HWND*);
 void HideWorkspaceByID(UINT);
 void ShowWorkspaceByID(UINT);
 void UpdateCurrentWorkspaceLayout();

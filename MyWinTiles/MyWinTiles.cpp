@@ -935,13 +935,19 @@ void UpdateWorkspaceLayout(UINT workspace)
 void TileWindowVertical()
 {
 	HWND* currentAry = GetWorkspaceByID(currentWorkSpace);
-	TileWindows(
-		NULL,
-		MDITILE_SKIPDISABLED | MDITILE_VERTICAL | MDITILE_ZORDER,
-		NULL,
-		MAX_WINDOW_PER_WORKSPACE,
-		currentAry
-	);
+	//Dirty hacks (need to calculate properly)
+	if (totalWindowInWorkspace[currentWorkSpace - 1] == 3) {
+		TileWindowVerticalThreeSplit(currentAry);
+	}
+	else {
+		TileWindows(
+			NULL,
+			MDITILE_SKIPDISABLED | MDITILE_VERTICAL | MDITILE_ZORDER,
+			NULL,
+			MAX_WINDOW_PER_WORKSPACE,
+			currentAry
+		);
+	}
 }
 
 void TileWindowHorizontal()
@@ -954,6 +960,52 @@ void TileWindowHorizontal()
 		MAX_WINDOW_PER_WORKSPACE,
 		currentAry
 	);
+}
+
+void TileWindowVerticalThreeSplit(HWND* currentAry)
+{
+	POINT origin = { 0 };
+	WINDOWPLACEMENT windowPlacement;
+
+	windowPlacement.length = sizeof(WINDOWPLACEMENT);
+	windowPlacement.flags = WPF_ASYNCWINDOWPLACEMENT;
+	windowPlacement.showCmd = SW_SHOWNOACTIVATE;
+	windowPlacement.ptMinPosition = origin;
+	windowPlacement.ptMaxPosition = origin;
+
+	int width = GetSystemMetrics(SM_CXSCREEN);
+	int height = GetSystemMetrics(SM_CYSCREEN);
+
+	RECT topLeft;
+	topLeft.left = 0;
+	topLeft.top = 0;
+	topLeft.right = width / 2;
+	topLeft.bottom = height / 2;
+
+	RECT bottomLeft;
+	bottomLeft.left = 0;
+	bottomLeft.top = topLeft.bottom;
+	bottomLeft.right = width / 2;
+	bottomLeft.bottom = height;
+
+	RECT topRight;
+	topRight.left = topLeft.right;
+	topRight.top = topLeft.top;
+	topRight.right = width;
+	topRight.bottom = height;
+
+	HWND target = NULL;
+	RECT rects[3] = { topLeft, bottomLeft, topRight };
+
+	for (UINT i = 0; i < 3; ++i) {
+		windowPlacement.rcNormalPosition = rects[i];
+		target = GetWindowByWorkspaceID(currentWorkSpace, i);
+
+		if (target != NULL) {
+			SetWindowPlacement(target, &windowPlacement);
+			ShowWindowAsync(target, SW_SHOWNOACTIVATE);
+		}
+	}
 }
 
 void HideWorkspaceByID(UINT id)
