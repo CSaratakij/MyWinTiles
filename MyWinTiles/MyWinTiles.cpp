@@ -162,12 +162,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			case HOTKEY_DESTROY_WINDOW:
 			{
 				HWND targetWindow = GetForegroundWindow();
+				HWND parentTargetWindow = GetParent(targetWindow);
+
 				RemoveWindowFromWorkspace(targetWindow, currentWorkSpace);
 
-				SendMessage(targetWindow, WM_CLOSE, 0, 0);
-				UpdateCurrentWorkspaceLayout();
+				if (parentTargetWindow == NULL) {
+					SendMessage(targetWindow, WM_CLOSE, 0, 0);
+				}
+				else {
+					PostMessage(parentTargetWindow, WM_CLOSE, 0, 0);
+				}
 
+				UpdateCurrentWorkspaceLayout();
 				FocusPreviousWindow();
+
 				break;
 			}
 
