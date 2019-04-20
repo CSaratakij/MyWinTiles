@@ -5,6 +5,11 @@
 #define MAX_LOADSTRING 100
 
 HWND appbar = NULL;
+HWND hWndProgramManager = NULL;
+HWND hWndExceptionWindow = NULL;
+HWND hWndInstance = NULL;
+
+
 unsigned short currentWorkSpaceInfo = 0;
 
 int currentFocusIndice[MAX_WORKSPACE];
@@ -58,6 +63,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MYWINTILES));
     MSG msg;
+
+	hWndProgramManager = FindWindow(NULL, L"Program Manager");
+	hWndExceptionWindow = FindWindow(L"ApplicationFrameWindow", L"");
 
     while (GetMessage(&msg, nullptr, 0, 0) > 0)
     {
@@ -500,7 +508,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
-      return FALSE;
+	   return FALSE;
+   else
+	   hWndInstance = hWnd;
 
    ShowWindow(hWnd, SW_HIDE);
    UpdateWindow(hWnd);
@@ -803,7 +813,13 @@ HWND* GetWorkspaceByID(UINT id)
 
 BOOL IsValidWindow(HWND hWnd)
 {
+	if (hWnd == hWndInstance)
+		return FALSE;
+
 	if (!IsWindowVisible(hWnd))
+		return FALSE;
+
+	if (hWnd == hWndProgramManager)
 		return FALSE;
 
 	TITLEBARINFO ti;
@@ -816,6 +832,28 @@ BOOL IsValidWindow(HWND hWnd)
 
 	if (GetWindowLong(hWnd, GWL_EXSTYLE) & WS_EX_TOOLWINDOW)
 		return FALSE;
+
+	if (hWndExceptionWindow == NULL)
+	{
+		TCHAR targetClassName[] = TEXT("ApplicationFrameWindow");
+		TCHAR buffer[23];
+
+		int isSuccess = GetClassName(hWnd, buffer, 23);
+
+		if (_tcscmp(targetClassName, buffer) == 0)
+		{
+			return FALSE;
+		}
+		else
+		{
+			return TRUE;
+		}
+	}
+	else
+	{
+		if (hWnd == hWndExceptionWindow)
+			return FALSE;
+	}
 
 	return TRUE;
 }
