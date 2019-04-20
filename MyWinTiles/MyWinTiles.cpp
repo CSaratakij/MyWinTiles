@@ -579,6 +579,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	   totalWindowInWorkspace[i] = 0;
    }
 
+   //Set default tile mode of workspace 1 to be overlap
+   workspaceTileMode[0] = OVERLAP_WINDOW_MODE;
+
    explorerTaskbar.cbSize = sizeof(APPBARDATA);
    explorerTaskbar.hWnd = FindWindow(_T(EXPLORER_APPBAR_WINDOW_CLASS), NULL);
    explorerTaskbar.uEdge = ABE_BOTTOM;
